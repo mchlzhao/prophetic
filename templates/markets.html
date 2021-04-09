@@ -3,5 +3,30 @@
 
 <h1>Welcome {{ user }}!</h1>
 <h3>Markets:</h3>
+<div class="container content-section">
+    <div class="row col-12">
+        {% for market in markets %}
+        <!--
+        <div class="card col-3 m-3" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">Card title</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of
+                    the
+                    card's content.</p>
+                <a href="#" class="card-link">Card link</a>
+                <a href="#" class="card-link">Another link</a>
+            </div>
+        </div>
+        -->
+        <div class="card col-3 m-3 align-items-center" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title text-center">{{ market.description }}</h5>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
 
 {% endblock %}
