@@ -5,4 +5,5 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('markets/', views.markets, name='markets'),
     path('markets/create', views.MarketCreateView.as_view(), name='market_create'),
+    path('markets/<int:pk>/update', views.MarketUpdateView.as_view(), name='market_update'),
 ]

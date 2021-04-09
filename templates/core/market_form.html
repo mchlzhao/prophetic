@@ -9,8 +9,9 @@
             <legend class="border-bottom">New Market</legend>
             {{ form|crispy }}
         </fieldset>
-        <div class="form-group d-grid mt-4 mb-3">
-            <button class="btn btn-outline-primary" type="submit">Create</button>
+        <div class="btn-toolbar mt-4 mb-3">
+            <button class="btn btn-outline-primary" type="submit">Done</button>
+            <a class="btn btn-outline-danger" href="{% url 'markets' %}">Cancel</a>
         </div>
     </form>
 </div>
