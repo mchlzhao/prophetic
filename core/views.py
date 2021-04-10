@@ -3,14 +3,24 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import redirect, render
 from django.views.generic.edit import CreateView, UpdateView
-from .models import Market
+from .models import Market, Order, Side
 
 def home(request):
     return render(request, 'home.html')
 
 @login_required
 def markets(request):
-    return render(request, 'markets.html', context={'markets': Market.objects.all()})
+    context = {
+        'markets': [
+            {
+                'market': market,
+                'buy_orders': Order.objects.filter(market=market, side=Side.BUY).order_by('price', 'date_time_ordered'),
+                'sell_orders': Order.objects.filter(market=market, side=Side.SELL).order_by('price', '-date_time_ordered')
+            }
+            for market in Market.objects.all()
+        ]
+    }
+    return render(request, 'markets.html', context=context)
 
 '''
 @login_required
@@ -28,7 +38,7 @@ def create_market(request):
 
 class MarketCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     model = Market
-    fields = ['description', 'details', 'min_value', 'max_value', 'tick_size', 'settlement']
+    fields = ['description', 'details', 'min_value', 'max_value', 'tick_size', 'multiplier']
     success_url = '/markets/'
     success_message = 'Market successfully created.'
 
@@ -38,7 +48,7 @@ class MarketCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
 
 class MarketUpdateView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Market
-    fields = ['description', 'details', 'min_value', 'max_value', 'tick_size', 'settlement']
+    fields = ['description', 'details', 'settlement']
     success_url = '/markets/'
     success_message = 'Market successfully updated.'
 
