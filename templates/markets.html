@@ -30,10 +30,10 @@
                 </div>
             </div>
             <div class="card-header w-100">
-                <a class="btn btn-outline-primary btn-sm" data-bs-toggle="collapse" href="#detail{{ market.market.pk }}"
+                <a class="btn btn-outline-dark btn-sm" data-bs-toggle="collapse" href="#detail{{ market.market.pk }}"
                     role="button" aria-expanded="false" aria-controls="detail{{ market.market.pk }}">Details</a>
                 {% if user == market.market.created_by %}
-                <a class="btn btn-outline-primary btn-sm" href="{% url 'market_update' market.market.pk %}">Edit</a>
+                <a class="btn btn-outline-dark btn-sm" href="{% url 'market_update' market.market.pk %}">Edit</a>
                 {% endif %}
             </div>
             <ul class="list-group list-group-flush w-100">
