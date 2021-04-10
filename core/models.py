@@ -9,8 +9,8 @@ class Market(models.Model):
     date_time_created = models.DateTimeField(default=timezone.now)
     created_by = models.ForeignKey(User, on_delete=models.PROTECT)
 
-    min_value = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    max_value = models.DecimalField(max_digits=8, decimal_places=2, default=100)
+    min_price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    max_price = models.DecimalField(max_digits=8, decimal_places=2, default=100)
     tick_size = models.DecimalField(max_digits=8, decimal_places=2, default=1)
     multiplier = models.PositiveIntegerField(default=1)
 

@@ -31,7 +31,7 @@ def markets(request):
 
 class MarketCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     model = Market
-    fields = ['description', 'details', 'min_value', 'max_value', 'tick_size', 'multiplier']
+    fields = ['description', 'details', 'min_price', 'max_price', 'tick_size', 'multiplier']
     success_url = '/markets/'
     success_message = 'Market successfully created.'
 
