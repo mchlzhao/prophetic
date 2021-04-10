@@ -10,11 +10,11 @@
     {% for market in markets %}
     <div class="col-sm-12 col-md-6 col-lg-4 col-xxl-3">
         <div class="card mt-2 mb-2 align-items-center" style="width: 18rem;">
-            <a class="w-100 text-decoration-none" data-bs-toggle="collapse" href="#detail{{ market.market.pk }}" role="button"
-                aria-expanded="false" aria-controls="detail{{ market.market.pk }}">
-            <div class="card-header w-100 pb-0">
-                <h5 class="card-title pt-1 pb-1">{{ market.market.description }}</h5>
-            </div>
+            <a class="w-100 text-decoration-none" data-bs-toggle="collapse" href="#detail{{ market.market.pk }}"
+                role="button" aria-expanded="false" aria-controls="detail{{ market.market.pk }}">
+                <div class="card-header w-100 pb-0">
+                    <h5 class="card-title pt-1 pb-1">{{ market.market.description }}</h5>
+                </div>
             </a>
             <div class="collapse multi-collapse w-100" id="detail{{ market.market.pk }}">
                 <div class="card-header w-100">
@@ -30,8 +30,8 @@
                 </div>
             </div>
             <div class="card-header w-100">
-                <a class="btn btn-outline-primary btn-sm" data-bs-toggle="collapse" href="#detail{{ market.market.pk }}" role="button"
-                    aria-expanded="false" aria-controls="detail{{ market.market.pk }}">Details</a>
+                <a class="btn btn-outline-primary btn-sm" data-bs-toggle="collapse" href="#detail{{ market.market.pk }}"
+                    role="button" aria-expanded="false" aria-controls="detail{{ market.market.pk }}">Details</a>
                 {% if user == market.market.created_by %}
                 <a class="btn btn-outline-primary btn-sm" href="{% url 'market_update' market.market.pk %}">Edit</a>
                 {% endif %}
@@ -61,6 +61,18 @@
                 {% endif %}
             </ul>
             <div class="card-footer w-100">
+
+                <form method="POST" action="{% url 'markets' %}">
+                    {% csrf_token %}
+                    <fieldset class="form-group">
+                        {{ market.order_form|crispy }}
+                    </fieldset>
+                    <div class="btn-toolbar mt-3">
+                        <button class="btn btn-outline-primary btn-sm" name="market_id" value="{{ market.market.pk }}"
+                            type="submit">Order</button>
+                    </div>
+                </form>
+
             </div>
         </div>
     </div>
