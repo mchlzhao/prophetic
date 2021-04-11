@@ -41,9 +41,16 @@
                 <li class="list-group-item"><small class="fw-lighter">No sell orders</small></li>
                 {% else %}
                 {% for sell_order in market.sell_orders %}
-                <li class="list-group-item justify-content-between d-flex">
-                    {{ sell_order.ordered_by }}
-                    <span><small class="fw-light">sell at </small>{{ sell_order.price }}</span>
+                <li class="list-group-item">
+                    <div class="hoverable justify-content-between d-flex">
+                        {{ sell_order.ordered_by }}
+                        {% if sell_order.ordered_by == user %}
+                        <span class="btn badge bg-danger delete-button">Delete</span>
+                        {% endif %}
+                        <span class="{% if sell_order.ordered_by == user %} order_price {% endif %}">
+                            <small class="fw-light">sell at </small>{{ sell_order.price }}
+                        </span>
+                    </div>
                 </li>
                 {% endfor %}
                 {% endif %}
@@ -53,9 +60,16 @@
                 <li class="list-group-item"><small class="fw-lighter">No buy orders</small></li>
                 {% else %}
                 {% for buy_order in market.buy_orders %}
-                <li class="list-group-item justify-content-between d-flex">
-                    {{ buy_order.ordered_by }}
-                    <span><small class="fw-light">buy at </small>{{ buy_order.price }}</span>
+                <li class="list-group-item">
+                    <div class="hoverable justify-content-between d-flex">
+                        {{ buy_order.ordered_by }}
+                        {% if buy_order.ordered_by == user %}
+                        <span class="btn badge bg-danger delete-button">Delete</span>
+                        {% endif %}
+                        <span class="{% if buy_order.ordered_by == user %} order_price {% endif %}">
+                            <small class="fw-light">buy at </small>{{ buy_order.price }}
+                        </span>
+                    </div>
                 </li>
                 {% endfor %}
                 {% endif %}
