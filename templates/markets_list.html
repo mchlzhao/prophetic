@@ -1,0 +1,90 @@
+{% load crispy_forms_tags %}
+<div class="row justify-content-center">
+    {% for market in markets %}
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xxl-3">
+        <div class="card mt-2 mb-2 align-items-center" style="width: 18rem;">
+            <a class="w-100 text-decoration-none" data-bs-toggle="collapse" href="#detail{{ market.market.pk }}"
+                role="button" aria-expanded="false" aria-controls="detail{{ market.market.pk }}">
+                <div class="card-header w-100 pb-0">
+                    <h5 class="card-title pt-1 pb-1">{{ market.market.description }}</h5>
+                </div>
+            </a>
+            <div class="collapse multi-collapse w-100" id="detail{{ market.market.pk }}">
+                <div class="card-header w-100">
+                    {% if market.market.details %}
+                    <p class="pb-1">{{ market.market.details }}</p>
+                    {% endif %}
+                    <small>
+                        Min Price: {{ market.market.min_price }}<br>
+                        Max Price: {{ market.market.max_price }}<br>
+                        Tick Size: {{ market.market.tick_size }}<br>
+                        Multiplier: {{ market.market.multiplier }}<br>
+                    </small>
+                </div>
+            </div>
+            <div class="card-header w-100">
+                <a class="btn btn-outline-dark btn-sm" data-bs-toggle="collapse" href="#detail{{ market.market.pk }}"
+                    role="button" aria-expanded="false" aria-controls="detail{{ market.market.pk }}">Details</a>
+                {% if user == market.market.created_by %}
+                <a class="btn btn-outline-dark btn-sm" href="{% url 'market_update' market.market.pk %}">Edit</a>
+                {% endif %}
+            </div>
+            <ul class="list-group list-group-flush w-100">
+                {% if not market.sell_orders %}
+                <li class="list-group-item"><small class="fw-lighter">No sell orders</small></li>
+                {% else %}
+                {% for sell_order in market.sell_orders %}
+                <li class="list-group-item">
+                    <div class="hoverable justify-content-between d-flex">
+                        {{ sell_order.ordered_by }}
+                        {% if sell_order.ordered_by == user %}
+                        <span class="btn badge bg-danger delete-button" id="{{ sell_order.pk }}">Delete</span>
+                        {% endif %}
+                        <span class="{% if sell_order.ordered_by == user %} order_price {% endif %}">
+                            <small class="fw-light">sell at </small>{{ sell_order.price }}
+                        </span>
+                    </div>
+                </li>
+                {% endfor %}
+                {% endif %}
+            </ul>
+            <ul class="list-group list-group-flush w-100">
+                {% if not market.buy_orders %}
+                <li class="list-group-item"><small class="fw-lighter">No buy orders</small></li>
+                {% else %}
+                {% for buy_order in market.buy_orders %}
+                <li class="list-group-item">
+                    <div class="hoverable justify-content-between d-flex">
+                        {{ buy_order.ordered_by }}
+                        {% if buy_order.ordered_by == user %}
+                        <span class="btn badge bg-danger delete-button" id="{{ buy_order.pk }}">Delete</span>
+                        {% endif %}
+                        <span class="{% if buy_order.ordered_by == user %} order_price {% endif %}">
+                            <small class="fw-light">buy at </small>{{ buy_order.price }}
+                        </span>
+                    </div>
+                </li>
+                {% endfor %}
+                {% endif %}
+            </ul>
+            <div class="card-footer w-100">
+
+                <form method="POST" action="{% url 'markets' %}">
+                    {% csrf_token %}
+                    <fieldset class="form-group">
+                        {{ market.order_form|crispy }}
+                    </fieldset>
+                    <div class="btn-toolbar mt-3">
+                        <button class="btn btn-outline-primary btn-sm" name="market_id" value="{{ market.market.pk }}"
+                            type="submit">Order</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script type="text/javascript">
+</script>
