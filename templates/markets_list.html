@@ -29,7 +29,7 @@
                 <a class="btn btn-outline-dark btn-sm" href="{% url 'market_update' market.market.pk %}">Edit</a>
                 {% endif %}
             </div>
-            <ul class="list-group list-group-flush w-100">
+            <ul class="list-group list-group-flush w-100" id="sell_orders_{{ market.market.pk }}">
                 {% if not market.sell_orders %}
                 <li class="list-group-item"><small class="fw-lighter">No sell orders</small></li>
                 {% else %}
@@ -48,7 +48,7 @@
                 {% endfor %}
                 {% endif %}
             </ul>
-            <ul class="list-group list-group-flush w-100">
+            <ul class="list-group list-group-flush w-100" id="buy_orders_{{ market.market.pk }}">
                 {% if not market.buy_orders %}
                 <li class="list-group-item"><small class="fw-lighter">No buy orders</small></li>
                 {% else %}

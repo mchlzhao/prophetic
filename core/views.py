@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.generic.edit import CreateView, UpdateView
 from .forms import OrderForm
@@ -68,14 +68,22 @@ def order_delete(request):
 
 @login_required
 def get_market_orders(request):
-    context = {
-        'markets': [
-            {
-                'market': market,
-                'buy_orders': Order.objects.filter(market=market, side=Side.BUY).order_by('-price', 'date_time_ordered'),
-                'sell_orders': Order.objects.filter(market=market, side=Side.SELL).order_by('-price', '-date_time_ordered'),
-                'order_form': OrderForm(),
-            }
-            for market in Market.objects.all()
-        ],
-    }
+    def order_to_json(order):
+        return {
+            'pk': order.pk,
+            'ordered_by': order.ordered_by.username,
+            'price': order.price,
+        }
+
+    orders = dict()
+    for market in Market.objects.all():
+        buy_orders = Order.objects.select_related('ordered_by').filter(market=market, side=Side.BUY).order_by('-price', 'date_time_ordered')
+        buy_orders_json = [order_to_json(order) for order in buy_orders]
+        sell_orders = Order.objects.filter(market=market, side=Side.SELL).order_by('-price', '-date_time_ordered')
+        sell_orders_json = [order_to_json(order) for order in sell_orders]
+        orders[market.pk] = {
+            'buy_orders': buy_orders_json,
+            'sell_orders': sell_orders_json,
+        }
+
+    return JsonResponse(orders)
