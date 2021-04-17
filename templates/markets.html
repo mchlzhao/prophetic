@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>Welcome {{ user }}!</h1>
+<h1>{{ group.name }}: {{ event.name }}</h1>
 
-<a class="btn btn-outline-success mt-3" href="{% url 'market_create' %}">New Market</a>
+<div class="btn-toolbar mt-3 mb-3 pt-3 pb-3 border-top border-bottom">
+    <a class="btn btn-outline-success" href="{% url 'market_create' event.pk %}">New Market</a>
+</div>
 
 <div id="markets_list">
     {% include "markets_list.html" %}
@@ -12,7 +14,7 @@
 <script type="text/javascript">
 
 (function doPoll(){
-    $.get("{% url 'market_orders' %}", function(data) {
+    $.get("{% url 'market_orders' event.pk %}", function(data) {
         console.log("polled");
         Object.keys(data).forEach(function(key) {
             var sellHTML = `<li class="list-group-item"><small class="fw-lighter">No sell orders</small></li>`;

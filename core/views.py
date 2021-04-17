@@ -63,11 +63,17 @@ def event_create(request, group_id):
         'form': form,
         'group': group,
     }
-    return render(request, 'event_create.html', context)
+    return render(request, 'event_form.html', context)
 
 @login_required
-def markets(request):
+def markets(request, event_id):
+    # TODO: permission
+
+    event = Event.objects.get(pk=event_id)
+    markets_list = Market.objects.filter(event=event_id)
     context = {
+        'event': event,
+        'group': event.group,
         'markets': [
             {
                 'market': market,
@@ -75,43 +81,50 @@ def markets(request):
                 'sell_orders': Order.objects.filter(market=market, side=Side.SELL).order_by('-price', '-time_ordered'),
                 'order_form': OrderForm(),
             }
-            for market in Market.objects.all()
+            for market in markets_list
         ],
     }
-    if request.is_ajax():
-        return render(request, 'markets_list.html', context)
-
     if request.method == 'POST':
         order_form = OrderForm(request.POST)
         if order_form.is_valid():
             order_form.save(market_id=request.POST.get('market_id'), ordered_by=request.user)
-            return redirect('markets')
+            return HttpResponseRedirect(reverse('markets', args=(event_id, )))
 
     return render(request, 'markets.html', context)
 
 class MarketCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     model = Market
     fields = ['description', 'details', 'min_price', 'max_price', 'tick_size', 'multiplier', 'position_limit']
-    success_url = '/markets/'
     success_message = 'Market successfully created.'
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
+        event = Event.objects.get(pk=self.kwargs['event_id'])
+        form.instance.event = event
         return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse('markets', kwargs={'event_id': self.kwargs['event_id']})
 
 class MarketUpdateView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Market
     fields = ['description', 'details', 'settlement']
-    success_url = '/markets/'
     success_message = 'Market successfully updated.'
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
+        '''
+        event = Event.objects.get(pk=self.kwargs['event_id'])
+        form.instance.event = event
+        '''
         return super().form_valid(form)
     
     def test_func(self):
         market = self.get_object()
         return self.request.user == market.created_by
+    
+    def get_success_url(self):
+        return reverse('markets', kwargs={'event_id': self.kwargs['event_id']})
 
 @login_required
 def order_delete(request):
@@ -122,7 +135,7 @@ def order_delete(request):
     return HttpResponse('OK')
 
 @login_required
-def get_market_orders(request):
+def get_market_orders(request, event_id):
     def order_to_json(order):
         return {
             'pk': order.pk,
@@ -130,8 +143,10 @@ def get_market_orders(request):
             'price': order.price,
         }
 
+    event = Event.objects.get(pk=event_id)
+    markets_list = Market.objects.filter(event=event_id)
     orders = dict()
-    for market in Market.objects.all():
+    for market in markets_list:
         buy_orders = Order.objects.select_related('ordered_by').filter(market=market, side=Side.BUY).order_by('-price', 'time_ordered')
         buy_orders_json = [order_to_json(order) for order in buy_orders]
         sell_orders = Order.objects.filter(market=market, side=Side.SELL).order_by('-price', '-time_ordered')
