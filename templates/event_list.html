@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Group: {{ group.name }}</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <a class="btn btn-outline-success mt-3 mb-3" href="{% url 'event_create' group.pk %}">New Event</a>
+        </div>
+        <div class="col">
+            <a class="btn btn-outline-primary mt-3 mb-3" href="#">Add Member</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="list-group col-6">
+            {% for event in events %}
+            <a href="#" class="list-group-item list-group-item-action">{{ event.name }}</a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
