@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -6,7 +7,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
-from .logic import AccountManager
+from .logic import *
 from .forms import EventCreateForm, OrderForm
 from .models import Account, Event, Group, Market, Order, Side
 
@@ -87,9 +88,21 @@ def markets(request, event_id):
     if request.method == 'POST':
         order_form = OrderForm(request.POST)
         if order_form.is_valid():
-            order_form.save(market_id=request.POST.get('market_id'), ordered_by=request.user)
+            market = Market.objects.get(pk=request.POST['market_id'])
+            user = request.user
+            side = Side(request.POST['side'])
+            price = Decimal(request.POST['price'])
+
+            response = OrderManager.add_order(market, user, side, price)
+            print(response)
+
             return HttpResponseRedirect(reverse('markets', args=(event_id, )))
 
+        for d in context['markets']:
+            if d['market'].pk == int(request.POST['market_id']):
+                d['order_form'] = order_form
+                break
+                
     return render(request, 'markets.html', context)
 
 class MarketCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):

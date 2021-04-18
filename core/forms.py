@@ -7,12 +7,6 @@ class OrderForm(forms.ModelForm):
         model = Order
         fields = ['side', 'price']
 
-    def save(self, market_id, ordered_by):
-        m = super().save(commit=False)
-        self.instance.market = Market.objects.get(pk=market_id)
-        self.instance.ordered_by = ordered_by
-        m.save()
-
 class EventCreateForm(forms.ModelForm):
     class Meta:
         model = Event

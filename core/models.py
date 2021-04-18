@@ -43,6 +43,9 @@ class Side(models.TextChoices):
     BUY = 'buy', 'Buy'
     SELL = 'sell', 'Sell'
 
+    def flip(side):
+        return Side.SELL if side == Side.BUY else Side.BUY
+
 class Order(models.Model):
     market = models.ForeignKey(Market, on_delete=models.PROTECT)
     ordered_by = models.ForeignKey(User, on_delete=models.PROTECT)
