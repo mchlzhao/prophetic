@@ -1,64 +1,92 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
 {% block content %}
 
-<h1>Welcome {{ user }}!</h1>
+<h1>{{ group.name }}: {{ event.name }}</h1>
 
-<div class="row">
-    <div class="col-6">
-        <h5 class="mt-5">Markets:</h5>
-    </div>
-    <div class="col-sm-6 offset-sm-0 col-xl-2 offset-xl-4 mt-auto">
-        <a class="btn btn-outline-success w-100" href="{% url 'market_create' %}">New Market</a>
-    </div>
+<div class="btn-toolbar mt-3 mb-3 pt-3 pb-3 border-top border-bottom">
+    <a class="btn btn-outline-success" href="{% url 'market_create' event.pk %}">New Market</a>
 </div>
 
-<div class="row justify-content-center">
-    {% for market in markets %}
-    <div class="col-6 col-xl-4 col-xxl-3">
-        <div class="card mt-2 mb-2 align-items-center" style="width: 20;">
-            <div class="card-header w-100 pb-0">
-                <h6 class="card-title pt-1 pb-1">{{ market.description }}</h6>
-            </div>
-            <div class="collapse multi-collapse w-100" id="detail{{ market.pk }}">
-                <div class="card-header w-100">
-                    {{ market.details }}
-                </div>
-            </div>
-            <div class="card-header w-100">
-                <a class="btn btn-outline-primary" data-bs-toggle="collapse" href="#detail{{ market.pk}}" role="button"
-                    aria-expanded="false" aria-controls="detail{{ market.pk}}">Details</a>
-                {% if user == market.created_by %}
-                <a class="btn btn-outline-primary" href="{% url 'market_update' market.pk %}">Edit</a>
-                {% endif %}
-            </div>
-            <ul class="list-group list-group-flush w-100">
-                <li class="list-group-item">An item</li>
-                <li class="list-group-item">A second item</li>
-                <li class="list-group-item">A third item</li>
-            </ul>
-            <div class="card-footer w-100">
-            </div>
-            <!--
-            <div class="card-body">
-                <ul class="list-group list-group-flush w-100">
-                    <li class="list-group-item d-inline-block text-center"
-                        style="border-width: '1px'; border-top-color: 'grey';">
-                        <small><b>No buy orders yet</b></small>
-                    </li>
-                    <li class="list-group-item d-inline-block text-center"
-                        style="border-top-width: '1px'; border-bottom: 0; border-top-color: 'grey'; border-bottom-color: 'grey'; background-color: '#262626';">
-                    </li>
-                    <li class="list-group-item d-inline-block text-center"
-                        style="border-width: '1px'; border-top-color: 'grey';">
-                        <small><b>No sell orders yet</b></small>
-                    </li>
-                </ul>
-            </div>
-            -->
-        </div>
-    </div>
-    {% endfor %}
+<div id="markets_list">
+    {% include "markets_list.html" %}
 </div>
+
+<script type="text/javascript">
+
+(function doPoll(){
+    $.get("{% url 'market_orders' event.pk %}", function(data) {
+        console.log("polled");
+        Object.keys(data).forEach(function(key) {
+            var sellHTML = `<li class="list-group-item"><small class="fw-lighter">No sell orders</small></li>`;
+            if (data[key]['sell_orders'].length > 0) {
+                sellHTML = "";
+                data[key]['sell_orders'].forEach(function(val) {
+                    var button = "";
+                    var className = "";
+                    if (val['ordered_by'] == "{{ user.username }}") {
+                        button = `<span class="btn badge bg-danger delete-button" id="${val['pk']}">Delete</span>`;
+                        className = "order_price";
+                    }
+                    sellHTML +=
+                    `<li class="list-group-item">
+                        <div class="hoverable justify-content-between d-flex">
+                            ${val['ordered_by']}
+                            ${button}
+                            <span class=${className}>
+                                <small class="fw-light">sell at </small>${val['price']}
+                            </span>
+                        </div>
+                    </li>`;
+                })
+            }
+            document.getElementById("sell_orders_" + key).innerHTML = sellHTML;
+
+            var buyHTML = `<li class="list-group-item"><small class="fw-lighter">No buy orders</small></li>`;
+            if (data[key]['buy_orders'].length > 0) {
+                buyHTML = "";
+                data[key]['buy_orders'].forEach(function(val) {
+                    var button = "";
+                    var className = "";
+                    if (val['ordered_by'] == "{{ user.username }}") {
+                        button = `<span class="btn badge bg-danger delete-button" id="${val['pk']}">Delete</span>`;
+                        className = "order_price";
+                    }
+                    buyHTML +=
+                    `<li class="list-group-item">
+                        <div class="hoverable justify-content-between d-flex">
+                            ${val['ordered_by']}
+                            ${button}
+                            <span class=${className}>
+                                <small class="fw-light">buy at </small>${val['price']}
+                            </span>
+                        </div>
+                    </li>`;
+                })
+            }
+            document.getElementById("buy_orders_" + key).innerHTML = buyHTML;
+        });
+        setTimeout(doPoll, 1000);
+    });
+})();
+
+$(document).on("click", ".delete-button", function() {
+    console.log("pressed");
+    $.ajax({
+        url: "{% url 'order_delete' %}",
+        data: {
+            "order_id": $(this).attr("id")
+        },
+        type: "get",
+        success: function(data) {
+            console.log(data);
+        },
+        failure: function(data) {
+            console.log("failure");
+            console.log(data);
+        }
+    })
+});
+
+</script>
 
 {% endblock %}
