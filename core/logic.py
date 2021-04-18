@@ -13,9 +13,6 @@ class AccountManager:
         Account.objects.filter(group=group, user=user).update(balance=F('balance')+inc)
 
 class MarketManager:
-    def add_market():
-        pass
-
     def settle(market: Market, prev_settlement: Decimal, cur_settlement: Decimal):
         if prev_settlement is None:
             prev_settlement = 0
@@ -96,6 +93,11 @@ class PositionManager:
         position = Position(market=market, user=user)
         position.save()
     
+    def add_positions_for_market(market: Market):
+        for account in Account.objects.filter(group=market.event.group):
+            position = Position(market=market, user=account.user)
+            position.save()
+
     def increment_position(market: Market, user: User, inc: int):
         Position.objects.filter(market=market, user=user).update(position=F('position')+inc)
 

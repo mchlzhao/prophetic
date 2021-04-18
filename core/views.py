@@ -118,16 +118,17 @@ class MarketCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     
     def get_success_url(self):
         return reverse('markets', kwargs={'event_id': self.kwargs['event_id']})
+    
+    def post(self, request, *args, **kwargs):
+        ret = super().post(request, *args, **kwargs)
+        PositionManager.add_positions_for_market(self.object)
+        return ret
 
 class MarketUpdateView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Market
     fields = ['description', 'details', 'settlement']
     success_message = 'Market successfully updated.'
 
-    def test_func(self):
-        market = self.get_object()
-        return self.request.user == market.created_by
-    
     def get_success_url(self):
         return reverse('markets', kwargs={'event_id': self.kwargs['event_id']})
     
@@ -139,6 +140,10 @@ class MarketUpdateView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMi
         MarketManager.settle(self.object, prev_settlement, cur_settlement)
         return ret
 
+    def test_func(self):
+        market = self.get_object()
+        return self.request.user == market.created_by
+    
 @login_required
 def order_delete(request):
     order = Order.objects.get(pk=request.GET['order_id'])
