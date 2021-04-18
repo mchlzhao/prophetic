@@ -31,7 +31,7 @@ class Market(models.Model):
     min_price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     max_price = models.DecimalField(max_digits=8, decimal_places=2, default=100)
     tick_size = models.DecimalField(max_digits=8, decimal_places=2, default=1)
-    multiplier = models.PositiveIntegerField(default=1)
+    multiplier = models.DecimalField(max_digits=8, decimal_places=2, default=1)
     position_limit = models.IntegerField(default=5)
 
     settlement = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)

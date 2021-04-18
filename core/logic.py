@@ -12,6 +12,20 @@ class AccountManager:
     def increment_balance(group: Group, user: User, inc: Decimal):
         Account.objects.filter(group=group, user=user).update(balance=F('balance')+inc)
 
+class MarketManager:
+    def add_market():
+        pass
+
+    def settle(market: Market, prev_settlement: Decimal, cur_settlement: Decimal):
+        if prev_settlement is None:
+            prev_settlement = 0
+        if cur_settlement is None:
+            cur_settlement = 0
+        Order.objects.filter(market=market).delete()
+        for position in Position.objects.filter(market=market):
+            AccountManager.increment_balance(market.event.group, position.user,
+                (cur_settlement-prev_settlement) * position.position * market.multiplier)
+
 class OrderManager:
     def get_best_order(market: Market, on_side: Side):
         if on_side == Side.BUY:
@@ -29,12 +43,13 @@ class OrderManager:
         return buy_price >= sell_price
 
     def add_order(market: Market, user: User, side: Side, price: Decimal):
+        if market.settlement is not None:
+            return 'Cannot place order in market that is already settled.'
+
         position = Position.objects.filter(market=market, user=user).first().position
         existing_orders = Order.objects.filter(market=market, ordered_by=user, side=side).count()
         if side == Side.SELL:
             existing_orders *= -1
-
-        print(position, existing_orders, market.position_limit)
 
         if abs(position+existing_orders) >= market.position_limit:
             return 'The number of orders placed exceeds your position limit.'
@@ -59,8 +74,8 @@ class OrderManager:
                 TradeManager.add_trade(market, user, best_match.ordered_by, best_match.price, True)
                 PositionManager.increment_position(market, user, 1)
                 PositionManager.increment_position(market, best_match.ordered_by, -1)
-                AccountManager.increment_balance(market.event.group, user, -price * market.multiplier)
-                AccountManager.increment_balance(market.event.group, best_match.ordered_by, price * market.multiplier)
+                AccountManager.increment_balance(market.event.group, user, -best_match.price * market.multiplier)
+                AccountManager.increment_balance(market.event.group, best_match.ordered_by, best_match.price * market.multiplier)
                 return 'Traded'
             elif side == Side.SELL and price <= best_match.price:
                 best_match.delete()

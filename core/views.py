@@ -124,20 +124,20 @@ class MarketUpdateView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMi
     fields = ['description', 'details', 'settlement']
     success_message = 'Market successfully updated.'
 
-    def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        '''
-        event = Event.objects.get(pk=self.kwargs['event_id'])
-        form.instance.event = event
-        '''
-        return super().form_valid(form)
-    
     def test_func(self):
         market = self.get_object()
         return self.request.user == market.created_by
     
     def get_success_url(self):
         return reverse('markets', kwargs={'event_id': self.kwargs['event_id']})
+    
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        prev_settlement = self.object.settlement
+        ret = super().post(request, *args, **kwargs)
+        cur_settlement = self.object.settlement
+        MarketManager.settle(self.object, prev_settlement, cur_settlement)
+        return ret
 
 @login_required
 def order_delete(request):
@@ -165,6 +165,7 @@ def get_market_orders(request, event_id):
         sell_orders = Order.objects.filter(market=market, side=Side.SELL).order_by('-price', '-time_ordered')
         sell_orders_json = [order_to_json(order) for order in sell_orders]
         orders[market.pk] = {
+            'has_settled': market.settlement is not None,
             'buy_orders': buy_orders_json,
             'sell_orders': sell_orders_json,
         }
