@@ -59,12 +59,16 @@ class OrderManager:
                 TradeManager.add_trade(market, user, best_match.ordered_by, best_match.price, True)
                 PositionManager.increment_position(market, user, 1)
                 PositionManager.increment_position(market, best_match.ordered_by, -1)
+                AccountManager.increment_balance(market.event.group, user, -price * market.multiplier)
+                AccountManager.increment_balance(market.event.group, best_match.ordered_by, price * market.multiplier)
                 return 'Traded'
             elif side == Side.SELL and price <= best_match.price:
                 best_match.delete()
                 TradeManager.add_trade(market, best_match.ordered_by, user, best_match.price, False)
                 PositionManager.increment_position(market, user, -1)
                 PositionManager.increment_position(market, best_match.ordered_by, 1)
+                AccountManager.increment_balance(market.event.group, user, best_match.price * market.multiplier)
+                AccountManager.increment_balance(market.event.group, best_match.ordered_by, -best_match.price * market.multiplier)
                 return 'Traded'
 
         order = Order(side=side, market=market, ordered_by=user, price=price)
