@@ -19,3 +19,8 @@
 </div>
 
 {% endblock %}
+
+{% block navbar %}
+<div class="dropdown-divider border-light"></div>
+<a class="nav-link" style="border-left: 1px;" href="{% url 'event_list' group.pk %}">{{ group.name }}</a>
+{% endblock %}
