@@ -18,7 +18,7 @@ def home(request):
 def group_list(request):
     group_ids = Account.objects.filter(user=request.user).values('group_id').distinct()
     context = {
-        'groups': Group.objects.filter(id__in=group_ids).order_by('name'),
+        'groups': Group.objects.filter(id__in=group_ids).order_by('name')
     }
     return render(request, 'group_list.html', context)
 
@@ -44,7 +44,7 @@ def event_list(request, group_id):
     group = Group.objects.get(pk=group_id)
     context = {
         'events': Event.objects.filter(group=group_id).order_by('name'),
-        'group': group,
+        'group': group
     }
     return render(request, 'event_list.html', context)
 
@@ -62,13 +62,15 @@ def event_create(request, group_id):
             return HttpResponseRedirect(reverse('event_list', args=(group_id, )))
     context = {
         'form': form,
-        'group': group,
+        'group': group
     }
     return render(request, 'event_form.html', context)
 
 @login_required
 def markets(request, event_id):
-    # TODO: permission
+    event = Event.objects.get(pk=event_id)
+    if Account.objects.filter(user=request.user, group=event.group).count() == 0:
+        return HttpResponseForbidden()
 
     event = Event.objects.get(pk=event_id)
     markets_list = Market.objects.filter(event=event_id)
@@ -80,7 +82,7 @@ def markets(request, event_id):
                 'market': market,
                 'buy_orders': Order.objects.filter(market=market, side=Side.BUY).order_by('-price', 'time_ordered'),
                 'sell_orders': Order.objects.filter(market=market, side=Side.SELL).order_by('-price', '-time_ordered'),
-                'order_form': OrderForm(),
+                'order_form': OrderForm()
             }
             for market in markets_list
         ],
@@ -158,7 +160,7 @@ def get_market_orders(request, event_id):
         return {
             'pk': order.pk,
             'ordered_by': order.ordered_by.username,
-            'price': order.price,
+            'price': order.price
         }
 
     event = Event.objects.get(pk=event_id)
@@ -172,7 +174,45 @@ def get_market_orders(request, event_id):
         orders[market.pk] = {
             'has_settled': market.settlement is not None,
             'buy_orders': buy_orders_json,
-            'sell_orders': sell_orders_json,
+            'sell_orders': sell_orders_json
         }
 
     return JsonResponse(orders)
+
+@login_required
+def event_accounts(request, event_id):
+    event = Event.objects.get(pk=event_id)
+    if Account.objects.filter(user=request.user, group=event.group).count() == 0:
+        return HttpResponseForbidden()
+    
+    markets = Market.objects.filter(event=event).order_by('time_created')
+    accounts = Account.objects.filter(group=event.group).order_by('-balance')
+    positions = {}
+
+    for position in Position.objects.filter(market__in=markets):
+        positions[(position.market, position.user)] = position.position
+
+    def get_markets_row(market):
+        return {
+            'description': market.description,
+            'positions': [
+                {
+                    'pos': positions[(market, account.user)],
+                    'abs_pos': abs(positions[(market, account.user)])
+                }
+                for account in accounts
+            ]
+        }
+
+    context = {
+        'accounts': [
+            {'name': account.user.username, 'balance': account.balance}
+            for account in accounts
+        ],
+        'event': event,
+        'markets': [
+            get_markets_row(market)
+            for market in markets
+        ]
+    }
+    return render(request, 'accounts.html', context)

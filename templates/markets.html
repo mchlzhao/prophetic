@@ -3,8 +3,9 @@
 
 <h1>{{ group.name }}: {{ event.name }}</h1>
 
-<div class="btn-toolbar mt-3 mb-3 pt-3 pb-3 border-top border-bottom">
+<div class="btn-toolbar mt-3 mb-3 pt-3 pb-3 border-top border-bottom justify-content-between">
     <a class="btn btn-outline-success" href="{% url 'market_create' event.pk %}">New Market</a>
+    <a class="btn btn-outline-primary" href="{% url 'event_accounts' event.pk %}">Accounts</a>
 </div>
 
 <div id="markets_list">
