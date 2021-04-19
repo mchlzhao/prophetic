@@ -1,0 +1,42 @@
+<div class="container mt-5 mb-5">
+    <table class="table table-striped table-hover table-bordered" style="table-layout: fixed;">
+        <thead>
+            <tr>
+                <th scope="row" style="width:30%; text-align:left"><small>Name</small></th>
+                {% for account in accounts %}
+                <td style="text-align:center"><b>{{ account.name }}</b></td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <th scope="row" style="text-align:left"><small>Balance</small></th>
+                {% for account in accounts %}
+                <td style="text-align:center">{{ account.balance }}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <th scope="row" style="text-align:left"><small>Event Profit/Loss</small></th>
+                {% for account in accounts %}
+                <td style="text-align:center">{{ account.event_balance }}</td>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for market in markets %}
+            <tr>
+                <td class="text-truncate" scope="row" style="text-align:left">
+                    <small>{{ market.description }}</small>
+                </td>
+                {% for position in market.positions %}
+                <td style="padding: 0; vertical-align: middle; text-align: center;">
+                    <span
+                        class="badge rounded-pill {% if position.pos < 0 %}bg-danger{% elif position.pos > 0 %}bg-success{% else %}bg-dark{% endif %}"
+                        style="min-width: 2rem;">
+                        {{ position.abs_pos }}
+                    </span>
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

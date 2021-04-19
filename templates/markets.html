@@ -3,7 +3,7 @@
 
 <h1>{{ group.name }}: {{ event.name }}</h1>
 
-<div class="btn-toolbar mt-3 mb-3 pt-3 pb-3 border-top border-bottom">
+<div class="btn-toolbar mt-3 mb-3 pt-3 pb-3 border-top border-bottom justify-content-between">
     <a class="btn btn-outline-success" href="{% url 'market_create' event.pk %}">New Market</a>
 </div>
 
@@ -16,7 +16,10 @@
 (function doPoll(){
     $.get("{% url 'market_orders' event.pk %}", function(data) {
         Object.keys(data).forEach(function(key) {
-            if (data[key]['has_settled']) return;
+            if (data[key]['has_settled']) {
+                document.getElementById("settlement").innerHTML = "Settled at " + data[key]['settlement'];
+            }
+
             var sellHTML = `<li class="list-group-item"><small class="fw-lighter">No sell orders</small></li>`;
             if (data[key]['sell_orders'].length > 0) {
                 sellHTML = "";
@@ -89,4 +92,20 @@ $(document).on("click", ".delete-button", function() {
 
 </script>
 
+{% endblock %}
+
+{% block navbar %}
+<div class="dropdown-divider border-light"></div>
+<a class="nav-link" style="border-left: 1px;" href="{% url 'event_list' group.pk %}">{{ group.name }}</a>
+<div class="dropdown-divider border-light"></div>
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+        aria-expanded="false">
+        {{ event.name }}
+    </a>
+    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
+        <li><a class="dropdown-item" href="{% url 'markets' event.pk %}">Markets</a></li>
+        <li><a class="dropdown-item" href="{% url 'event_accounts' event.pk %}">Accounts</a></li>
+    </ul>
+</li>
 {% endblock %}

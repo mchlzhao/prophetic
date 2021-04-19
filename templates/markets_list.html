@@ -30,7 +30,6 @@
                 <a class="btn btn-outline-dark btn-sm" href="{% url 'market_update' event_id=event.pk pk=market.market.pk %}">Edit</a>
                 {% endif %}
             </div>
-            {% if not market.market.settlement %}
             <ul class="list-group list-group-flush w-100" id="sell_orders_{{ market.market.pk }}">
                 {% if not market.sell_orders %}
                 <li class="list-group-item"><small class="fw-lighter">No sell orders</small></li>
@@ -69,7 +68,8 @@
                 {% endfor %}
                 {% endif %}
             </ul>
-            <div class="card-footer w-100">
+            <div class="card-footer w-100" id="settlement">
+                {% if not market.has_settled %}
                 <form method="POST" action="{% url 'markets' event.pk %}">
                     {% csrf_token %}
                     <fieldset class="form-group">
@@ -80,12 +80,10 @@
                             type="submit">Order</button>
                     </div>
                 </form>
+                {% else %}
+                Settled at {{ market.market.settlement }}
+                {% endif %}
             </div>
-            {% else %}
-            <ul class="list-group list-group-flush w-100">
-                <li class="list-group-item"><small class="fw-lighter">Settled at </small>{{ market.market.settlement }}</li>
-            </ul>
-            {% endif %}
         </div>
     </div>
     {% endfor %}

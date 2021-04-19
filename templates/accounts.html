@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>{{ event.group.name }}: {{ event.name }}</h1>
+
+<div id="accounts_table">
+    {% include "accounts_table.html" %}
+</div>
+
+{% endblock %}
+
+{% block navbar %}
+<div class="dropdown-divider border-light"></div>
+<a class="nav-link" style="border-left: 1px;" href="{% url 'event_list' event.group.pk %}">{{ event.group.name }}</a>
+<div class="dropdown-divider border-light"></div>
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+        aria-expanded="false">
+        {{ event.name }}
+    </a>
+    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
+        <li><a class="dropdown-item" href="{% url 'markets' event.pk %}">Markets</a></li>
+        <li><a class="dropdown-item" href="{% url 'event_accounts' event.pk %}">Accounts</a></li>
+    </ul>
+</li>
+
+<script type="text/javascript">
+
+(function doPoll(){
+    $.get("{% url 'event_accounts' event.pk %}", function(data) {
+        document.getElementById("accounts_table").innerHTML = data;
+        setTimeout(doPoll, 3000);
+    });
+})();
+
+</script>
+
+{% endblock %}
