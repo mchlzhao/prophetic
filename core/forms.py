@@ -2,11 +2,6 @@ from django import forms
 from django.contrib.auth.models import User
 from .models import Event, Group, Market, Order
 
-class OrderForm(forms.ModelForm):
-    class Meta:
-        model = Order
-        fields = ['side', 'price']
-
 class EventCreateForm(forms.ModelForm):
     class Meta:
         model = Event
