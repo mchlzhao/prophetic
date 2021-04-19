@@ -7,22 +7,28 @@
     <table class="table table-striped table-hover" style="table-layout:fixed;">
         <tbody>
             <tr>
-                <th scope="row" style="width:25%; text-align:left">Name</th>
+                <th scope="row" style="width:25%; text-align:left"><small>Name</small></th>
                 {% for account in accounts %}
                 <td style="text-align:center"><b>{{ account.name }}</b></td>
                 {% endfor %}
             </tr>
             <tr>
-                <th scope="row" style="text-align:left">Balance</th>
+                <th scope="row" style="text-align:left"><small>Balance</small></th>
                 {% for account in accounts %}
                 <td style="text-align:center">{{ account.balance }}</td>
                 {% endfor %}
             </tr>
+            <tr>
+                <th scope="row" style="text-align:left"><small>Event Profit/Loss</small></th>
+                {% for account in accounts %}
+                <td style="text-align:center">{{ account.event_balance }}</td>
+                {% endfor %}
+            </tr>
             {% for market in markets %}
             <tr>
-                <th class="text-truncate" scope="row" style="text-align:left">
+                <td class="text-truncate" scope="row" style="text-align:left">
                     <small>{{ market.description }}</small>
-                </th>
+                </td>
                 {% for position in market.positions %}
                 <td style="padding: 0; vertical-align: middle; text-align: center;">
                     <span

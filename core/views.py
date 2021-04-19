@@ -190,12 +190,11 @@ def event_accounts(request, event_id):
     markets = Market.objects.filter(event=event).order_by('time_created')
     accounts = Account.objects.filter(group=event.group).order_by('-balance')
 
-    event_balance = {}
-
-
+    event_balance = {account.user: 0 for account in accounts}
     positions = {}
     for position in MarketPosition.objects.filter(market__in=markets):
         positions[(position.market, position.user)] = position.position
+        event_balance[position.user] += position.profitLoss
 
     def get_markets_row(market):
         return {
@@ -211,8 +210,11 @@ def event_accounts(request, event_id):
 
     context = {
         'accounts': [
-            {'name': account.user.username, 'balance': account.balance}
-            for account in accounts
+            {
+                'name': account.user.username,
+                'balance': account.balance,
+                'event_balance': event_balance[account.user]
+            } for account in accounts
         ],
         'event': event,
         'markets': [
