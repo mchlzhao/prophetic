@@ -56,10 +56,11 @@ class Order(models.Model):
     def __str__(self):
         return f'Order on {self.market} by {self.ordered_by}, {self.side} at {self.price}'
 
-class Position(models.Model):
+class MarketPosition(models.Model):
     market = models.ForeignKey(Market, on_delete=models.PROTECT)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     position = models.IntegerField(default=0) # positive is long, negative is short
+    profitLoss = models.DecimalField(max_digits=16, decimal_places=2, default=0)
 
 class Trade(models.Model):
     market = models.ForeignKey(Market, on_delete=models.PROTECT)

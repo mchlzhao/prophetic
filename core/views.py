@@ -123,7 +123,7 @@ class MarketCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     
     def post(self, request, *args, **kwargs):
         ret = super().post(request, *args, **kwargs)
-        PositionManager.add_positions_for_market(self.object)
+        MarketPositionManager.add_positions_for_market(self.object)
         return ret
 
 class MarketUpdateView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -176,6 +176,7 @@ def get_market_orders(request, event_id):
             'buy_orders': buy_orders_json,
             'sell_orders': sell_orders_json
         }
+        print(market, orders[market.pk]['has_settled'])
 
     return JsonResponse(orders)
 
@@ -187,9 +188,12 @@ def event_accounts(request, event_id):
     
     markets = Market.objects.filter(event=event).order_by('time_created')
     accounts = Account.objects.filter(group=event.group).order_by('-balance')
-    positions = {}
 
-    for position in Position.objects.filter(market__in=markets):
+    event_balance = {}
+
+
+    positions = {}
+    for position in MarketPosition.objects.filter(market__in=markets):
         positions[(position.market, position.user)] = position.position
 
     def get_markets_row(market):
