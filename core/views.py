@@ -222,4 +222,8 @@ def event_accounts(request, event_id):
             for market in markets
         ]
     }
+
+    if request.is_ajax():
+        return render(request, 'accounts_table.html', context)
+
     return render(request, 'accounts.html', context)

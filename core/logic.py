@@ -13,9 +13,12 @@ class MarketManager:
     def settle(market: Market, prev_settlement: Decimal, cur_settlement: Decimal):
         if prev_settlement is None:
             prev_settlement = 0
+
         if cur_settlement is None:
             cur_settlement = 0
-        Order.objects.filter(market=market).delete()
+        else:
+            Order.objects.filter(market=market).delete()
+
         for position in MarketPosition.objects.filter(market=market):
             PnLManager.increment_pnl(market, position.user, 
                 (cur_settlement-prev_settlement) * position.position * market.multiplier)
