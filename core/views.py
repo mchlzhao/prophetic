@@ -79,6 +79,7 @@ def markets(request, event_id):
         'group': event.group,
         'markets': [
             {
+                'has_settled': market.settlement is not None,
                 'market': market,
                 'buy_orders': Order.objects.filter(market=market, side=Side.BUY).order_by('-price', 'time_ordered'),
                 'sell_orders': Order.objects.filter(market=market, side=Side.SELL).order_by('-price', '-time_ordered'),
@@ -173,10 +174,10 @@ def get_market_orders(request, event_id):
         sell_orders_json = [order_to_json(order) for order in sell_orders]
         orders[market.pk] = {
             'has_settled': market.settlement is not None,
+            'settlement': market.settlement,
             'buy_orders': buy_orders_json,
             'sell_orders': sell_orders_json
         }
-        print(market, orders[market.pk]['has_settled'])
 
     return JsonResponse(orders)
 
