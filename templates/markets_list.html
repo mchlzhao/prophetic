@@ -68,9 +68,13 @@
                 {% endfor %}
                 {% endif %}
             </ul>
-            <div class="card-footer w-100 justify-content-between d-flex" id="account_{{ market.market.pk }}">
-                <span class="text-muted" id="pnl_{{ market.market.pk }}"></span>
-                <span id="pos_{{ market.market.pk }}"></span>
+            <div class="card-footer w-100 justify-content-between d-flex text-muted" id="account_{{ market.market.pk }}">
+                Your account:
+                <span>
+                    <span id="pnl_{{ market.market.pk }}"></span>
+                    &nbsp;
+                    <span class="text-light" id="pos_{{ market.market.pk }}"></span>
+                </span>
             </div>
             <div class="card-footer w-100 text-muted" id="settlement_{{ market.market.pk }}">
                 {% if not market.has_settled %}
