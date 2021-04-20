@@ -1,7 +1,6 @@
 from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -22,11 +21,10 @@ def group_list(request):
     }
     return render(request, 'group_list.html', context)
 
-class GroupCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
+class GroupCreateView(LoginRequiredMixin, CreateView):
     model = Group
     fields = ['name']
     success_url = '/groups/'
-    success_message = 'Group successfully created.'
 
     def form_valid(self, form):
         group = form.save(commit=False)
@@ -90,10 +88,9 @@ def markets(request, event_id):
                 
     return render(request, 'markets.html', context)
 
-class MarketCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
+class MarketCreateView(LoginRequiredMixin, CreateView):
     model = Market
     fields = ['description', 'details', 'min_price', 'max_price', 'tick_size', 'multiplier', 'position_limit']
-    success_message = 'Market successfully created.'
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
@@ -109,10 +106,9 @@ class MarketCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
         MarketPositionManager.add_positions_for_market(self.object)
         return ret
 
-class MarketUpdateView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class MarketUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Market
     fields = ['description', 'details', 'settlement']
-    success_message = 'Market successfully updated.'
 
     def get_success_url(self):
         return reverse('markets', kwargs={'event_id': self.kwargs['event_id']})
