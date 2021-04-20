@@ -13,4 +13,5 @@ urlpatterns = [
     path('event/<int:event_id>/market/<int:pk>/update/', views.MarketUpdateView.as_view(), name='market_update'),
     path('event/<int:event_id>/accounts/', views.event_accounts, name='event_accounts'),
     path('order_delete/', views.order_delete, name='order_delete'),
+    path('order_add/', views.order_add, name='order_add'),
 ]

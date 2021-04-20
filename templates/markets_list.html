@@ -58,7 +58,7 @@
                     <div class="hoverable justify-content-between d-flex">
                         {{ buy_order.ordered_by }}
                         {% if buy_order.ordered_by == user %}
-                        <span class="btn badge bg-danger delete-button" id="{{ buy_order.pk }}">Delete</span>
+                        <span class="btn badge bg-danger delete-button" id="{{ buy_order.pk }}" value="{{ market.market.pk }}">Delete</span>
                         {% endif %}
                         <span class="{% if buy_order.ordered_by == user %} order_price {% endif %}">
                             <small class="fw-light">buy at </small>{{ buy_order.price }}
@@ -70,14 +70,12 @@
             </ul>
             <div class="card-footer w-100" id="settlement">
                 {% if not market.has_settled %}
-                <form method="POST" action="{% url 'markets' event.pk %}">
-                    {% csrf_token %}
-                    <fieldset class="form-group">
-                        {{ market.order_form|crispy }}
-                    </fieldset>
-                    <div class="btn-toolbar mt-3">
-                        <button class="btn btn-outline-primary btn-sm" name="market_id" value="{{ market.market.pk }}"
-                            type="submit">Order</button>
+                <form onkeydown="return event.key != 'Enter';">
+                    <input type="number" name="price" step="0.01" class="numberinput form-control mt-2" required="" id="price_{{ market.market.pk }}">
+                    <small id="feedback_{{ market.market.pk }}"></small>
+                    <div class="btn-toolbar mt-3 justify-content-between">
+                        <button class="btn btn-outline-primary btn-sm order_button" name="buy" value="{{ market.market.pk }}" type="button">Buy</button>
+                        <button class="btn btn-outline-primary btn-sm order_button" name="sell" value="{{ market.market.pk }}" type="button">Sell</button>
                     </div>
                 </form>
                 {% else %}

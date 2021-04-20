@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
 from .logic import *
-from .forms import EventCreateForm, OrderForm
+from .forms import EventCreateForm
 from .models import Account, Event, Group, Market, Order, Side
 
 def home(request):
@@ -82,29 +82,11 @@ def markets(request, event_id):
                 'has_settled': market.settlement is not None,
                 'market': market,
                 'buy_orders': Order.objects.filter(market=market, side=Side.BUY).order_by('-price', 'time_ordered'),
-                'sell_orders': Order.objects.filter(market=market, side=Side.SELL).order_by('-price', '-time_ordered'),
-                'order_form': OrderForm()
+                'sell_orders': Order.objects.filter(market=market, side=Side.SELL).order_by('-price', '-time_ordered')
             }
             for market in markets_list
         ],
     }
-    if request.method == 'POST':
-        order_form = OrderForm(request.POST)
-        if order_form.is_valid():
-            market = Market.objects.get(pk=request.POST['market_id'])
-            user = request.user
-            side = Side(request.POST['side'])
-            price = Decimal(request.POST['price'])
-
-            response = OrderManager.add_order(market, user, side, price)
-            print(response)
-
-            return HttpResponseRedirect(reverse('markets', args=(event_id, )))
-
-        for d in context['markets']:
-            if d['market'].pk == int(request.POST['market_id']):
-                d['order_form'] = order_form
-                break
                 
     return render(request, 'markets.html', context)
 
@@ -146,6 +128,36 @@ class MarketUpdateView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestMi
     def test_func(self):
         market = self.get_object()
         return self.request.user == market.created_by
+
+@login_required
+def order_add(request):
+    market = Market.objects.get(pk=request.POST['market_id'])
+    if Account.objects.filter(group=market.event.group, user=request.user).count() == 0:
+        return HttpResponseForbidden()
+
+    side = Side.BUY if request.POST['is_buy'] == 'true' else Side.SELL
+    if len(request.POST['price']) == 0:
+        return HttpResponse('Price is not numeric.')
+    try:
+        x = float(request.POST['price'])
+    except ValueError:
+        return HttpResponse('Price is not numeric.')
+    
+    def decimal_places(s):
+        c = s.split('.')
+        if len(c) == 1:
+            return 0
+        return len(c[1])
+
+    dp = decimal_places(request.POST['price'])
+    if dp > 2:
+        return HttpResponse('Price has too many decimal places.')
+    
+    price = Decimal(request.POST['price'])
+
+    response = OrderManager.add_order(market, request.user, side, price)
+
+    return HttpResponse(response)
     
 @login_required
 def order_delete(request):
@@ -153,7 +165,7 @@ def order_delete(request):
     if order.ordered_by != request.user:
         return HttpResponse('Permission denied')
     order.delete()
-    return HttpResponse('OK')
+    return HttpResponse('Order deleted')
 
 @login_required
 def get_market_orders(request, event_id):

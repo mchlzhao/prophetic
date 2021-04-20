@@ -73,7 +73,6 @@
 })();
 
 $(document).on("click", ".delete-button", function() {
-    console.log("pressed");
     $.ajax({
         url: "{% url 'order_delete' %}",
         data: {
@@ -87,8 +86,30 @@ $(document).on("click", ".delete-button", function() {
             console.log("failure");
             console.log(data);
         }
-    })
+    });
 });
+
+$(document).on("click", ".order_button", function() {
+    var market_id = $(this).attr("value");
+    $.ajax({
+        url: "{% url 'order_add' %}",
+        data: {
+            "csrfmiddlewaretoken": "{{ csrf_token }}",
+            "market_id": market_id,
+            "is_buy": $(this).attr("name") == "buy",
+            "price": $("#price_" + market_id).val()
+        },
+        type: "post",
+        success: function(data) {
+            document.getElementById("feedback_" + market_id).innerHTML = data;
+        },
+        failure: function(data) {
+            console.log("failure");
+            console.log(data);
+        }
+    });
+    $("#price_" + $(this).attr("value")).val("");
+})
 
 </script>
 

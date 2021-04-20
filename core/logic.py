@@ -54,7 +54,7 @@ class OrderManager:
 
     def add_order(market: Market, user: User, side: Side, price: Decimal):
         if market.settlement is not None:
-            return 'Cannot place order in market that is already settled.'
+            return 'Cannot place order in market that is already settled'
 
         position = MarketPosition.objects.filter(market=market, user=user).first().position
         existing_orders = Order.objects.filter(market=market, ordered_by=user, side=side).count()
@@ -62,22 +62,22 @@ class OrderManager:
             existing_orders *= -1
 
         if abs(position+existing_orders) >= market.position_limit:
-            return 'The number of orders placed exceeds your position limit.'
+            return 'Position limit exceeded'
         
         if price < market.min_price or price > market.max_price:
-            return 'The price is out of bounds.'
+            return 'Price is out of bounds'
         
         above_min = price-market.min_price
 
         if above_min % market.tick_size != Decimal(0):
-            return 'The price is not a multiple of the tick-size.'
+            return 'Price does not line up with tick-size'
         
         best_match = OrderManager.get_best_order(market, Side.flip(side))
 
         if best_match is not None:
             if best_match.ordered_by == user:
                 if side == Side.BUY and price >= best_match.price or side == Side.SELL and price <= best_match.price:
-                    return 'The order is in-cross with another one of your orders.'
+                    return 'In-cross with your own order'
             
             if side == Side.BUY and price >= best_match.price:
                 best_match.delete()
