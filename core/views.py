@@ -242,6 +242,14 @@ def add_member(request, group_id):
     if Account.objects.filter(group=group, user=request.user).count() == 0:
         return HttpResponseForbidden()
     
+    return render(request, 'group_add_member.html', {'group': group})
+
+@login_required
+def add_member_ajax(request, group_id):
+    group = Group.objects.get(pk=group_id)
+    if Account.objects.filter(group=group, user=request.user).count() == 0:
+        return HttpResponseForbidden()
+    
     username = str(request.POST['username'])
     new_user = User.objects.filter(username=username).first()
     if new_user == None:
