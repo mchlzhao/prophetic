@@ -29,7 +29,7 @@
                 {% for position in market.positions %}
                 <td style="padding: 0; vertical-align: middle; text-align: center;">
                     <span
-                        class="badge rounded-pill {% if position.pos < 0 %}bg-danger{% elif position.pos > 0 %}bg-success{% else %}bg-dark{% endif %}"
+                        class="badge rounded-pill {% if position.pos < 0 %}bg-danger{% elif position.pos > 0 %}bg-info{% else %}bg-dark{% endif %}"
                         style="min-width: 2rem;">
                         {{ position.abs_pos }}
                     </span>

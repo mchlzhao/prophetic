@@ -235,3 +235,27 @@ def event_accounts(request, event_id):
         return render(request, 'accounts_table.html', context)
 
     return render(request, 'accounts.html', context)
+
+@login_required
+def add_member(request, group_id):
+    group = Group.objects.get(pk=group_id)
+    if Account.objects.filter(group=group, user=request.user).count() == 0:
+        return HttpResponseForbidden()
+    
+    return render(request, 'group_add_member.html', {'group': group})
+
+@login_required
+def add_member_ajax(request, group_id):
+    group = Group.objects.get(pk=group_id)
+    if Account.objects.filter(group=group, user=request.user).count() == 0:
+        return HttpResponseForbidden()
+    
+    username = str(request.POST['username'])
+    new_user = User.objects.filter(username=username).first()
+    if new_user == None:
+        return HttpResponse('Username does not exist')
+    if Account.objects.filter(group=group, user=new_user).count() > 0:
+        return HttpResponse('User is already part of group')
+    
+    AccountManager.add_user_to_group(group, new_user)
+    return HttpResponse('User added')

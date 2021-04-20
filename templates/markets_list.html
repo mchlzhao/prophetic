@@ -71,11 +71,11 @@
             <div class="card-footer w-100" id="settlement">
                 {% if not market.has_settled %}
                 <form onkeydown="return event.key != 'Enter';">
-                    <input type="number" name="price" step="0.01" class="numberinput form-control mt-2" required="" id="price_{{ market.market.pk }}" placeholder="Price">
+                    <input type="number" name="price" step="0.01" class="numberinput form-control mt-2 theme-grey" required="" id="price_{{ market.market.pk }}" placeholder="Price">
                     <small id="feedback_{{ market.market.pk }}"></small>
                     <div class="btn-toolbar mt-3 justify-content-between">
-                        <button class="btn btn-outline-secondary btn-sm order_button" name="buy" value="{{ market.market.pk }}" type="button">Buy</button>
-                        <button class="btn btn-outline-secondary btn-sm order_button" name="sell" value="{{ market.market.pk }}" type="button">Sell</button>
+                        <button class="btn btn-outline-info btn-sm order_button" name="buy" value="{{ market.market.pk }}" type="button">Buy</button>
+                        <button class="btn btn-outline-danger btn-sm order_button" name="sell" value="{{ market.market.pk }}" type="button">Sell</button>
                     </div>
                 </form>
                 {% else %}

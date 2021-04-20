@@ -48,3 +48,7 @@ h1, h2, h3, h4, h5, h6 {
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none;  /* IE 10+ */
 }
+
+.theme-grey, .theme-grey:focus {
+    background-color: #c6c8ca;
+}

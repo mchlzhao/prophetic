@@ -6,8 +6,15 @@ from .models import Account, Event, Group, Market, Order, MarketPosition, Side, 
 class AccountManager:
     def add_user_to_group(group: Group, user: User):
         # create account for user
+        if Account.objects.filter(group=group, user=user).count() > 0:
+            return
+
         account = Account(group=group, user=user)
         account.save()
+    
+        event_set = Event.objects.filter(group=group)
+        for market in Market.objects.filter(event__in=event_set):
+            MarketPositionManager.add_position(market, user)
 
 class MarketManager:
     def settle(market: Market, prev_settlement: Decimal, cur_settlement: Decimal):
