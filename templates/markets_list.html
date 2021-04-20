@@ -1,12 +1,12 @@
 {% load crispy_forms_tags %}
-<div class="row justify-content-center">
+<div class="row justify-content-left">
     {% for market in markets %}
-    <div class="col-sm-12 col-md-6 col-lg-4 col-xxl-3">
-        <div class="card mt-2 mb-2 align-items-center" style="width: 18rem;">
+    <div class="col-xs-12 col-md-6 col-xl-4">
+        <div class="card text-light bg-dark mt-2 mb-2 align-items-center" style="width: 20rem;">
             <a class="w-100 text-decoration-none" data-bs-toggle="collapse" href="#detail{{ market.market.pk }}"
                 role="button" aria-expanded="false" aria-controls="detail{{ market.market.pk }}">
                 <div class="card-header w-100 pb-0">
-                    <h5 class="card-title pt-1 pb-1">{{ market.market.description }}</h5>
+                    <h5 class="card-title pt-1 pb-1 text-light">{{ market.market.description }}</h5>
                 </div>
             </a>
             <div class="collapse multi-collapse w-100" id="detail{{ market.market.pk }}">
@@ -24,18 +24,18 @@
                 </div>
             </div>
             <div class="card-header w-100">
-                <a class="btn btn-outline-dark btn-sm" data-bs-toggle="collapse" href="#detail{{ market.market.pk }}"
+                <a class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse" href="#detail{{ market.market.pk }}"
                     role="button" aria-expanded="false" aria-controls="detail{{ market.market.pk }}">Details</a>
                 {% if user == market.market.created_by %}
-                <a class="btn btn-outline-dark btn-sm" href="{% url 'market_update' event_id=event.pk pk=market.market.pk %}">Edit</a>
+                <a class="btn btn-outline-secondary btn-sm" href="{% url 'market_update' event_id=event.pk pk=market.market.pk %}">Edit</a>
                 {% endif %}
             </div>
             <ul class="list-group list-group-flush w-100" id="sell_orders_{{ market.market.pk }}">
                 {% if not market.sell_orders %}
-                <li class="list-group-item"><small class="fw-lighter">No sell orders</small></li>
+                <li class="list-group-item list-group-item-dark"><small class="fw-lighter">No sell orders</small></li>
                 {% else %}
                 {% for sell_order in market.sell_orders %}
-                <li class="list-group-item">
+                <li class="list-group-item list-group-item-dark">
                     <div class="hoverable justify-content-between d-flex">
                         {{ sell_order.ordered_by }}
                         {% if sell_order.ordered_by == user %}
@@ -51,10 +51,10 @@
             </ul>
             <ul class="list-group list-group-flush w-100" id="buy_orders_{{ market.market.pk }}">
                 {% if not market.buy_orders %}
-                <li class="list-group-item"><small class="fw-lighter">No buy orders</small></li>
+                <li class="list-group-item list-group-item-dark"><small class="fw-lighter">No buy orders</small></li>
                 {% else %}
                 {% for buy_order in market.buy_orders %}
-                <li class="list-group-item">
+                <li class="list-group-item list-group-item-dark">
                     <div class="hoverable justify-content-between d-flex">
                         {{ buy_order.ordered_by }}
                         {% if buy_order.ordered_by == user %}
@@ -71,11 +71,11 @@
             <div class="card-footer w-100" id="settlement">
                 {% if not market.has_settled %}
                 <form onkeydown="return event.key != 'Enter';">
-                    <input type="number" name="price" step="0.01" class="numberinput form-control mt-2" required="" id="price_{{ market.market.pk }}">
+                    <input type="number" name="price" step="0.01" class="numberinput form-control mt-2" required="" id="price_{{ market.market.pk }}" placeholder="Price">
                     <small id="feedback_{{ market.market.pk }}"></small>
                     <div class="btn-toolbar mt-3 justify-content-between">
-                        <button class="btn btn-outline-primary btn-sm order_button" name="buy" value="{{ market.market.pk }}" type="button">Buy</button>
-                        <button class="btn btn-outline-primary btn-sm order_button" name="sell" value="{{ market.market.pk }}" type="button">Sell</button>
+                        <button class="btn btn-outline-secondary btn-sm order_button" name="buy" value="{{ market.market.pk }}" type="button">Buy</button>
+                        <button class="btn btn-outline-secondary btn-sm order_button" name="sell" value="{{ market.market.pk }}" type="button">Sell</button>
                     </div>
                 </form>
                 {% else %}
