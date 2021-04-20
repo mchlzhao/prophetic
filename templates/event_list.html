@@ -13,10 +13,39 @@
     </div>
 </div>
 
-<div class="btn-toolbar justify-content-between mt-3 mb-3 pt-3 pb-3 border-top">
+<div class="mt-3 mb-3 pt-3 pb-3 border-top">
     <a class="btn btn-outline-success" href="{% url 'event_create' group.pk %}">New Event</a>
-    <a class="btn btn-outline-secondary" href="#">Add Member</a>
+    <form class="mt-3 mb-3" onkeydown="return event.key != 'Enter';">
+        <fieldset>
+            <input type="text" class="form-control w-auto" id="username_field" placeholder="Username">
+            <small id="add_member_feedback" class="form-text text-muted"></small>
+            <button class="btn btn-outline-secondary mt-1" type="button" id="add_member_button">Add Member</button>
+        </fieldset>
+    </form>
 </div>
+
+<script type="text/javascript">
+
+$(document).on("click", "#add_member_button", function() {
+    $.ajax({
+        url: "{% url 'add_member' group.pk %}",
+        data: {
+            "csrfmiddlewaretoken": "{{ csrf_token }}",
+            "username": $("#username_field").val()
+        },
+        type: "post",
+        success: function(data) {
+            document.getElementById("add_member_feedback").innerHTML = data;
+        },
+        failure: function(data) {
+            console.log("failure");
+            console.log(data);
+        }
+    });
+    $("#username_field").val("");
+})
+
+</script>
 
 {% endblock %}
 
