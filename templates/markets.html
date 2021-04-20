@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>{{ group.name }}: {{ event.name }}</h1>
+<h1 class="text-white">{{ group.name }}: {{ event.name }}</h1>
 
 <div class="btn-toolbar mt-3 mb-3 pt-3 pb-3 border-top border-bottom justify-content-between">
     <a class="btn btn-outline-success" href="{% url 'market_create' event.pk %}">New Market</a>
@@ -16,11 +16,11 @@
 (function doPoll(){
     $.get("{% url 'market_orders' event.pk %}", function(data) {
         Object.keys(data).forEach(function(key) {
-            if (data[key]['has_settled']) {
+            if (data[key]['has_settled'] == "true") {
                 document.getElementById("settlement").innerHTML = "Settled at " + data[key]['settlement'];
             }
 
-            var sellHTML = `<li class="list-group-item"><small class="fw-lighter">No sell orders</small></li>`;
+            var sellHTML = `<li class="list-group-item list-group-item-dark"><small class="fw-lighter">No sell orders</small></li>`;
             if (data[key]['sell_orders'].length > 0) {
                 sellHTML = "";
                 data[key]['sell_orders'].forEach(function(val) {
@@ -31,7 +31,7 @@
                         className = "order_price";
                     }
                     sellHTML +=
-                    `<li class="list-group-item">
+                    `<li class="list-group-item list-group-item-dark">
                         <div class="hoverable justify-content-between d-flex">
                             ${val['ordered_by']}
                             ${button}
@@ -44,7 +44,7 @@
             }
             document.getElementById("sell_orders_" + key).innerHTML = sellHTML;
 
-            var buyHTML = `<li class="list-group-item"><small class="fw-lighter">No buy orders</small></li>`;
+            var buyHTML = `<li class="list-group-item list-group-item-dark"><small class="fw-lighter">No buy orders</small></li>`;
             if (data[key]['buy_orders'].length > 0) {
                 buyHTML = "";
                 data[key]['buy_orders'].forEach(function(val) {
@@ -55,7 +55,7 @@
                         className = "order_price";
                     }
                     buyHTML +=
-                    `<li class="list-group-item">
+                    `<li class="list-group-item list-group-item-dark">
                         <div class="hoverable justify-content-between d-flex">
                             ${val['ordered_by']}
                             ${button}
