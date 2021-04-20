@@ -52,3 +52,7 @@ h1, h2, h3, h4, h5, h6 {
 .theme-grey, .theme-grey:focus {
     background-color: #c6c8ca;
 }
+
+.active-grey {
+    background-color: #c6c8ca !important;
+}
