@@ -20,18 +20,9 @@
 
 {% block navbar %}
 <div class="dropdown-divider border-light"></div>
-<a class="nav-link" style="border-left: 1px;" href="{% url 'event_list' event.group.pk %}">{{ event.group.name }}</a>
+<a class="nav-link" href="{% url 'event_list' event.group.pk %}">{{ event.group.name }}</a>
 <div class="dropdown-divider border-light"></div>
-<li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-        aria-expanded="false">
-        {{ event.name }}
-    </a>
-    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
-        <li><a class="dropdown-item" href="{% url 'markets' event.pk %}">Markets</a></li>
-        <li><a class="dropdown-item" href="{% url 'event_accounts' event.pk %}">Accounts</a></li>
-    </ul>
-</li>
+<a class="nav-link" href="{% url 'markets' event.pk %}">{{ event.name }}</a>
 
 <script type="text/javascript">
 

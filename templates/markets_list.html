@@ -39,7 +39,7 @@
                     <div class="hoverable justify-content-between d-flex">
                         {{ sell_order.ordered_by }}
                         {% if sell_order.ordered_by == user %}
-                        <span class="btn badge bg-danger delete-button" id="{{ sell_order.pk }}">Delete</span>
+                        <span class="btn badge bg-danger delete-button text-light" id="{{ sell_order.pk }}">Delete</span>
                         {% endif %}
                         <span class="{% if sell_order.ordered_by == user %} order_price {% endif %}">
                             <small class="fw-light">sell at </small>{{ sell_order.price }}
@@ -58,7 +58,7 @@
                     <div class="hoverable justify-content-between d-flex">
                         {{ buy_order.ordered_by }}
                         {% if buy_order.ordered_by == user %}
-                        <span class="btn badge bg-danger delete-button" id="{{ buy_order.pk }}" value="{{ market.market.pk }}">Delete</span>
+                        <span class="btn badge bg-danger delete-button text-light" id="{{ buy_order.pk }}" value="{{ market.market.pk }}">Delete</span>
                         {% endif %}
                         <span class="{% if buy_order.ordered_by == user %} order_price {% endif %}">
                             <small class="fw-light">buy at </small>{{ buy_order.price }}
