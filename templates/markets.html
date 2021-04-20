@@ -5,7 +5,7 @@
 
 <ul class="nav nav-tabs mt-3">
     <li class="nav-item bg-dark">
-        <a class="nav-link active">Markets</a>
+        <a class="nav-link active active-grey">Markets</a>
     </li>
     <li class="nav-item bg-dark">
         <a class="nav-link text-light" href="{% url 'event_accounts' event.pk %}">Accounts</a>
@@ -26,7 +26,7 @@
     $.get("{% url 'market_orders' event.pk %}", function(data) {
         Object.keys(data).forEach(function(key) {
             if (data[key]['has_settled'] == "true") {
-                document.getElementById("settlement").innerHTML = "Settled at " + data[key]['settlement'];
+                document.getElementById("settlement_" + key).innerHTML = "Settled at " + data[key]['settlement'];
             }
 
             var sellHTML = `<li class="list-group-item list-group-item-dark"><small class="fw-lighter">No sell orders</small></li>`;
@@ -36,7 +36,7 @@
                     var button = "";
                     var className = "";
                     if (val['ordered_by'] == "{{ user.username }}") {
-                        button = `<span class="btn badge bg-danger delete-button" id="${val['pk']}">Delete</span>`;
+                        button = `<span class="btn badge bg-danger delete-button text-light" id="${val['pk']}">Delete</span>`;
                         className = "order_price";
                     }
                     sellHTML +=
@@ -60,7 +60,7 @@
                     var button = "";
                     var className = "";
                     if (val['ordered_by'] == "{{ user.username }}") {
-                        button = `<span class="btn badge bg-danger delete-button" id="${val['pk']}">Delete</span>`;
+                        button = `<span class="btn badge bg-danger delete-button text-light" id="${val['pk']}">Delete</span>`;
                         className = "order_price";
                     }
                     buyHTML +=
@@ -76,6 +76,17 @@
                 })
             }
             document.getElementById("buy_orders_" + key).innerHTML = buyHTML;
+
+            document.getElementById("pnl_" + key).innerHTML = data[key]['pnl'];
+            var pos = data[key]['pos'];
+            var pill_class = "bg-primary";
+            if (pos < 0) pill_class = "bg-danger";
+            else if (pos > 0) pill_class = "bg-info";
+            var abs_pos = data[key]['abs_pos'];
+            document.getElementById("pos_" + key).innerHTML = 
+                `<span class="badge ${pill_class}" style="min-width: 2rem;">
+                    ${abs_pos}
+                </span>`;
         });
         setTimeout(doPoll, 1000);
     });
@@ -126,16 +137,7 @@ $(document).on("click", ".order_button", function() {
 
 {% block navbar %}
 <div class="dropdown-divider border-light"></div>
-<a class="nav-link" style="border-left: 1px;" href="{% url 'event_list' group.pk %}">{{ group.name }}</a>
+<a class="nav-link" href="{% url 'event_list' group.pk %}">{{ group.name }}</a>
 <div class="dropdown-divider border-light"></div>
-<li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-        aria-expanded="false">
-        {{ event.name }}
-    </a>
-    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
-        <li><a class="dropdown-item" href="{% url 'markets' event.pk %}">Markets</a></li>
-        <li><a class="dropdown-item" href="{% url 'event_accounts' event.pk %}">Accounts</a></li>
-    </ul>
-</li>
+<a class="nav-link" href="{% url 'markets' event.pk %}">{{ event.name }}</a>
 {% endblock %}
