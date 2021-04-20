@@ -26,7 +26,7 @@
     $.get("{% url 'market_orders' event.pk %}", function(data) {
         Object.keys(data).forEach(function(key) {
             if (data[key]['has_settled'] == "true") {
-                document.getElementById("settlement").innerHTML = "Settled at " + data[key]['settlement'];
+                document.getElementById("settlement_" + key).innerHTML = "Settled at " + data[key]['settlement'];
             }
 
             var sellHTML = `<li class="list-group-item list-group-item-dark"><small class="fw-lighter">No sell orders</small></li>`;
@@ -76,6 +76,17 @@
                 })
             }
             document.getElementById("buy_orders_" + key).innerHTML = buyHTML;
+
+            document.getElementById("pnl_" + key).innerHTML = "Your account: " + data[key]['pnl'];
+            var pos = data[key]['pos'];
+            var pill_class = "bg-primary";
+            if (pos < 0) pill_class = "bg-danger";
+            else if (pos > 0) pill_class = "bg-info";
+            var abs_pos = data[key]['abs_pos'];
+            document.getElementById("pos_" + key).innerHTML = 
+                `<span class="badge ${pill_class}" style="min-width: 2rem;">
+                    ${abs_pos}
+                </span>`;
         });
         setTimeout(doPoll, 1000);
     });

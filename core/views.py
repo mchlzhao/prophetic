@@ -164,7 +164,7 @@ def order_delete(request):
     return HttpResponse('Order deleted')
 
 @login_required
-def get_market_orders(request, event_id):
+def get_market_orders_and_position(request, event_id):
     def order_to_json(order):
         return {
             'pk': order.pk,
@@ -180,11 +180,15 @@ def get_market_orders(request, event_id):
         buy_orders_json = [order_to_json(order) for order in buy_orders]
         sell_orders = Order.objects.filter(market=market, side=Side.SELL).order_by('-price', '-time_ordered')
         sell_orders_json = [order_to_json(order) for order in sell_orders]
+        pos = MarketPosition.objects.filter(market=market, user=request.user).first()
         orders[market.pk] = {
             'has_settled': market.settlement is not None,
             'settlement': market.settlement,
             'buy_orders': buy_orders_json,
-            'sell_orders': sell_orders_json
+            'sell_orders': sell_orders_json,
+            'pos': pos.position,
+            'abs_pos': abs(pos.position),
+            'pnl': pos.profitLoss
         }
 
     return JsonResponse(orders)
