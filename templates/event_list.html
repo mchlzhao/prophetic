@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1 class="text-white">{{ group.name }}</h1>
+<h1 class="text-light">{{ group.name }}</h1>
 
 <div class="btn-toolbar justify-content-between mt-3 mb-3 pt-3 pb-3 border-top border-bottom">
     <a class="btn btn-outline-success" href="{% url 'event_create' group.pk %}">New Event</a>

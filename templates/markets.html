@@ -1,9 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1 class="text-white">{{ group.name }}: {{ event.name }}</h1>
+<h1 class="text-light">{{ group.name }}: {{ event.name }}</h1>
 
-<div class="btn-toolbar mt-3 mb-3 pt-3 pb-3 border-top border-bottom justify-content-between">
+<ul class="nav nav-tabs mt-5">
+    <li class="nav-item bg-dark">
+        <a class="nav-link active">Markets</a>
+    </li>
+    <li class="nav-item bg-dark">
+        <a class="nav-link text-light" href="{% url 'event_accounts' event.pk %}">Accounts</a>
+    </li>
+</ul>
+
+<div class="btn-toolbar mb-3 pt-3 pb-3 border-bottom justify-content-between">
     <a class="btn btn-outline-success" href="{% url 'market_create' event.pk %}">New Market</a>
 </div>
 

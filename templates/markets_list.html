@@ -2,11 +2,11 @@
 <div class="row justify-content-left">
     {% for market in markets %}
     <div class="col-xs-12 col-md-6 col-xl-4">
-        <div class="card text-white bg-dark mt-2 mb-2 align-items-center" style="width: 20rem;">
+        <div class="card text-light bg-dark mt-2 mb-2 align-items-center" style="width: 20rem;">
             <a class="w-100 text-decoration-none" data-bs-toggle="collapse" href="#detail{{ market.market.pk }}"
                 role="button" aria-expanded="false" aria-controls="detail{{ market.market.pk }}">
                 <div class="card-header w-100 pb-0">
-                    <h5 class="card-title pt-1 pb-1 text-white">{{ market.market.description }}</h5>
+                    <h5 class="card-title pt-1 pb-1 text-light">{{ market.market.description }}</h5>
                 </div>
             </a>
             <div class="collapse multi-collapse w-100" id="detail{{ market.market.pk }}">

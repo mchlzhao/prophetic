@@ -1,7 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1 class="text-white">{{ event.group.name }}: {{ event.name }}</h1>
+<h1 class="text-light">{{ event.group.name }}: {{ event.name }}</h1>
+
+<ul class="nav nav-tabs mt-5">
+    <li class="nav-item bg-dark">
+        <a class="nav-link text-light" href="{% url 'markets' event.pk %}">Markets</a>
+    </li>
+    <li class="nav-item text-light bg-dark">
+        <a class="nav-link active" >Accounts</a>
+    </li>
+</ul>
 
 <div id="accounts_table">
     {% include "accounts_table.html" %}
