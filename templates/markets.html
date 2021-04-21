@@ -3,12 +3,12 @@
 
 <h1 class="text-light">{{ group.name }}: {{ event.name }}</h1>
 
-<ul class="nav nav-tabs mt-3">
+<ul class="nav nav-tabs mt-3" style="border-color: #c6c8ca;">
     <li class="nav-item bg-dark">
-        <a class="nav-link active active-grey">Markets</a>
+        <a class="nav-link active active-grey border-0">Markets</a>
     </li>
     <li class="nav-item bg-dark">
-        <a class="nav-link text-light" href="{% url 'event_accounts' event.pk %}">Accounts</a>
+        <a class="nav-link text-muted border-0" href="{% url 'event_accounts' event.pk %}">Accounts</a>
     </li>
 </ul>
 

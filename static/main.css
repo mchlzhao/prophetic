@@ -56,3 +56,18 @@ h1, h2, h3, h4, h5, h6 {
 .active-grey {
     background-color: #c6c8ca !important;
 }
+
+#title {
+    font-size: 80px;
+    font-family: 'Major Mono Display', monospace;
+    text-transform:none !important;
+    letter-spacing:-5px;
+}
+
+#title-div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    vertical-align:middle;
+}
