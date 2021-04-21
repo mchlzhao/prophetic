@@ -10,6 +10,13 @@ from .logic import *
 from .forms import EventCreateForm
 from .models import Account, Event, Group, Market, Order, Side
 
+def position_colour(position):
+    if position < 0:
+        return "#d9534f"
+    elif position > 0:
+        return "#1d9bcf"
+    return "#000000"
+
 def home(request):
     return render(request, 'home.html')
 
@@ -188,7 +195,8 @@ def get_market_orders_and_position(request, event_id):
             'sell_orders': sell_orders_json,
             'pos': pos.position,
             'abs_pos': abs(pos.position),
-            'pnl': pos.profitLoss
+            'pnl': pos.profitLoss,
+            'pos_col': position_colour(pos.position)
         }
 
     return JsonResponse(orders)
@@ -205,7 +213,7 @@ def event_accounts(request, event_id):
     event_balance = {account.user: 0 for account in accounts}
     positions = {}
     for position in MarketPosition.objects.filter(market__in=markets):
-        positions[(position.market, position.user)] = position.position
+        positions[(position.market, position.user)] = (position.position, position.profitLoss)
         event_balance[position.user] += position.profitLoss
 
     def get_markets_row(market):
@@ -213,8 +221,10 @@ def event_accounts(request, event_id):
             'description': market.description,
             'positions': [
                 {
-                    'pos': positions[(market, account.user)],
-                    'abs_pos': abs(positions[(market, account.user)])
+                    'pos_col': position_colour(positions[(market, account.user)][0]),
+                    'pos': positions[(market, account.user)][0],
+                    'abs_pos': abs(positions[(market, account.user)][0]),
+                    'pnl': positions[(market, account.user)][1]
                 }
                 for account in accounts
             ]

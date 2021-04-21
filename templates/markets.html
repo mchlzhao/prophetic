@@ -5,10 +5,10 @@
 
 <ul class="nav nav-tabs mt-3" style="border-color: #c6c8ca;">
     <li class="nav-item bg-dark">
-        <a class="nav-link active active-grey border-0">Markets</a>
+        <a class="nav-link active active-grey border-0 text-dark">Markets</a>
     </li>
     <li class="nav-item bg-dark">
-        <a class="nav-link text-muted border-0" href="{% url 'event_accounts' event.pk %}">Accounts</a>
+        <a class="nav-link text-light border-0" href="{% url 'event_accounts' event.pk %}">Accounts</a>
     </li>
 </ul>
 
@@ -77,16 +77,13 @@
             }
             document.getElementById("buy_orders_" + key).innerHTML = buyHTML;
 
-            document.getElementById("pnl_" + key).innerHTML = data[key]['pnl'];
-            var pos = data[key]['pos'];
-            var pill_class = "bg-primary";
-            if (pos < 0) pill_class = "bg-danger";
-            else if (pos > 0) pill_class = "bg-info";
             var abs_pos = data[key]['abs_pos'];
-            document.getElementById("pos_" + key).innerHTML = 
-                `<span class="badge ${pill_class}" style="min-width: 2rem;">
-                    ${abs_pos}
-                </span>`;
+            var pos_col = data[key]['pos_col'];
+            var pnl = data[key]['pnl'];
+            document.getElementById("account_" + key).innerHTML = 
+                `${pnl}
+                <span style="color: ${pos_col};">&#9632;</span>
+                <span>${abs_pos}</span>`;
         });
         setTimeout(doPoll, 1000);
     });
