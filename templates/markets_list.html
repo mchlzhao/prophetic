@@ -68,15 +68,12 @@
                 {% endfor %}
                 {% endif %}
             </ul>
-            <div class="card-footer w-100 justify-content-between d-flex text-muted" id="account_{{ market.market.pk }}">
+            <div class="card-footer w-100 justify-content-between d-flex text-light">
                 Your account:
-                <span>
-                    <span id="pnl_{{ market.market.pk }}"></span>
-                    &nbsp;
-                    <span class="text-light" id="pos_{{ market.market.pk }}"></span>
+                <span id="account_{{ market.market.pk }}">
                 </span>
             </div>
-            <div class="card-footer w-100 text-muted" id="settlement_{{ market.market.pk }}">
+            <div class="card-footer w-100 text-light" id="settlement_{{ market.market.pk }}">
                 {% if not market.has_settled %}
                 <form onkeydown="return event.key != 'Enter';">
                     <input type="number" name="price" step="0.01" class="numberinput form-control mt-2 theme-grey" required="" id="price_{{ market.market.pk }}" placeholder="Price">

@@ -195,7 +195,8 @@ def get_market_orders_and_position(request, event_id):
             'sell_orders': sell_orders_json,
             'pos': pos.position,
             'abs_pos': abs(pos.position),
-            'pnl': pos.profitLoss
+            'pnl': pos.profitLoss,
+            'pos_col': position_colour(pos.position)
         }
 
     return JsonResponse(orders)
