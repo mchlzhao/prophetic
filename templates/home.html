@@ -3,6 +3,27 @@
 
 <div id="title-div">
 <h6 class="text-light" id="title">pRophetic</h6>
+<h6 class="mt-3" style="text-align: center;">A social betting platform</h6>
 </div>
+
+<script type="text/javascript">
+
+function randomNum(low, high) {
+    return Math.floor(Math.random() * (high - low + 1)) + low;
+}
+
+function random() {
+    var index = randomNum(0, 8);
+    var text = "pRophetic";
+    var num = randomNum(0, 9);
+    document.getElementById("title").innerHTML = text.substr(0, index) + num.toString()[0]
+        + text.substr(index+1, 9-index-1);
+}
+
+$(document).ready(function() {
+    window.setInterval(random, 200);
+})
+
+</script>
 
 {% endblock %}
