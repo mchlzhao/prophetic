@@ -132,3 +132,12 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.office365.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('PROPHETIC_EMAIL')
+EMAIL_HOST_PASSWORD = os.environ.get('PROPHETIC_PASSWORD')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SERVER_EMAIL = EMAIL_HOST_USER
