@@ -164,7 +164,10 @@ def order_add(request):
     
 @login_required
 def order_delete(request):
-    order = Order.objects.get(pk=request.GET['order_id'])
+    order_set = Order.objects.filter(pk=request.GET['order_id'])
+    if order_set.count() == 0:
+        return HttpResponse('Order does not exist')
+    order = order_set.first()
     if order.ordered_by != request.user:
         return HttpResponse('Permission denied')
     order.delete()
