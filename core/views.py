@@ -59,11 +59,11 @@ def event_create(request, group_id):
         return HttpResponseForbidden()
 
     group = Group.objects.get(pk=group_id)
-    form = EventCreateForm()
+    form = EventCreateForm(group_id=group_id)
     if request.method == 'POST':
-        form = EventCreateForm(request.POST)
+        form = EventCreateForm(request.POST, group_id=group_id)
         if form.is_valid():
-            form.save(group_id=group_id, created_by=request.user)
+            form.save(request.user)
             return HttpResponseRedirect(reverse('event_list', args=(group_id, )))
     context = {
         'form': form,
