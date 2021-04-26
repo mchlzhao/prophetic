@@ -26,7 +26,10 @@
     $.get("{% url 'market_orders' event.pk %}", function(data) {
         Object.keys(data).forEach(function(key) {
             if (data[key]['has_settled'] == true) {
-                document.getElementById("settlement_" + key).innerHTML = "Settled at " + data[key]['settlement'];
+                var elem = document.getElementById("settlement_" + key);
+                if (elem !== null) {
+                    elem.innerHTML = "Settled at " + data[key]['settlement'];
+                }
             }
 
             var sellHTML = `<li class="list-group-item list-group-item-dark"><small class="fw-lighter">No sell orders</small></li>`;
@@ -51,7 +54,10 @@
                     </li>`;
                 })
             }
-            document.getElementById("sell_orders_" + key).innerHTML = sellHTML;
+            var sellElem = document.getElementById("sell_orders_" + key);
+            if (sellElem !== null) {
+                sellElem.innerHTML = sellHTML;
+            }
 
             var buyHTML = `<li class="list-group-item list-group-item-dark"><small class="fw-lighter">No buy orders</small></li>`;
             if (data[key]['buy_orders'].length > 0) {
@@ -75,15 +81,21 @@
                     </li>`;
                 })
             }
-            document.getElementById("buy_orders_" + key).innerHTML = buyHTML;
+            var buyElem = document.getElementById("buy_orders_" + key);
+            if (buyElem !== null) {
+                buyElem.innerHTML = buyHTML;
+            }
 
             var abs_pos = data[key]['abs_pos'];
             var pos_col = data[key]['pos_col'];
             var pnl = data[key]['pnl'];
-            document.getElementById("account_" + key).innerHTML = 
-                `${pnl}
-                <span style="color: ${pos_col};">&#9632;</span>
-                <span>${abs_pos}</span>`;
+            var accountElem = document.getElementById("account_" + key);
+            if (accountElem !== null) {
+                accountElem.innerHTML = 
+                    `${pnl}
+                    <span style="color: ${pos_col};">&#9632;</span>
+                    <span>${abs_pos}</span>`;
+            }
         });
         setTimeout(doPoll, 1000);
     });

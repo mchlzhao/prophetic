@@ -1,9 +1,11 @@
+from decimal import Decimal
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 
 class Group(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
     time_created = models.DateTimeField(default=timezone.now)
     created_by = models.ForeignKey(User, on_delete=models.PROTECT)
 
@@ -30,9 +32,9 @@ class Market(models.Model):
 
     min_price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     max_price = models.DecimalField(max_digits=8, decimal_places=2, default=100)
-    tick_size = models.DecimalField(max_digits=8, decimal_places=2, default=1)
-    multiplier = models.DecimalField(max_digits=8, decimal_places=2, default=1)
-    position_limit = models.IntegerField(default=5)
+    tick_size = models.DecimalField(max_digits=8, decimal_places=2, default=1, validators=[MinValueValidator(Decimal('0.01'))])
+    multiplier = models.DecimalField(max_digits=8, decimal_places=2, default=1, validators=[MinValueValidator(Decimal('0.01'))])
+    position_limit = models.PositiveIntegerField(default=5, validators=[MinValueValidator(1)])
 
     settlement = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
 
@@ -62,6 +64,14 @@ class MarketPosition(models.Model):
     position = models.IntegerField(default=0) # positive is long, negative is short
     profitLoss = models.DecimalField(max_digits=16, decimal_places=2, default=0)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['market', 'user'],
+                name='unique_position_per_market_user',
+            )
+        ]
+
 class Trade(models.Model):
     market = models.ForeignKey(Market, on_delete=models.PROTECT)
     buyer = models.ForeignKey(User, on_delete=models.PROTECT, related_name='buyer_user')
@@ -79,6 +89,6 @@ class Account(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['group', 'user'],
-                name='unique_user_per_group',
+                name='unique_account_user_per_group',
             )
         ]

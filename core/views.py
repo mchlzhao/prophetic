@@ -95,7 +95,7 @@ def markets(request, event_id):
                 
     return render(request, 'markets.html', context)
 
-class MarketCreateView(LoginRequiredMixin, CreateView):
+class MarketCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Market
     fields = ['description', 'details', 'min_price', 'max_price', 'tick_size', 'multiplier', 'position_limit']
 
@@ -103,15 +103,18 @@ class MarketCreateView(LoginRequiredMixin, CreateView):
         form.instance.created_by = self.request.user
         event = Event.objects.get(pk=self.kwargs['event_id'])
         form.instance.event = event
-        return super().form_valid(form)
+
+        ret = super().form_valid(form)
+
+        MarketPositionManager.add_positions_for_market(self.object)
+        return ret
     
     def get_success_url(self):
         return reverse('markets', kwargs={'event_id': self.kwargs['event_id']})
     
-    def post(self, request, *args, **kwargs):
-        ret = super().post(request, *args, **kwargs)
-        MarketPositionManager.add_positions_for_market(self.object)
-        return ret
+    def test_func(self):
+        event = Event.objects.get(pk=self.kwargs['event_id'])
+        return Account.objects.filter(group=event.group, user=self.request.user).count() > 0
 
 class MarketUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Market
@@ -175,6 +178,10 @@ def order_delete(request):
 
 @login_required
 def get_market_orders_and_position(request, event_id):
+    event = Event.objects.get(pk=event_id)
+    if Account.objects.filter(user=request.user, group=event.group).count() == 0:
+        return HttpResponseForbidden()
+
     def order_to_json(order):
         return {
             'pk': order.pk,
@@ -182,7 +189,6 @@ def get_market_orders_and_position(request, event_id):
             'price': order.price
         }
 
-    event = Event.objects.get(pk=event_id)
     markets_list = Market.objects.filter(event=event_id)
     orders = dict()
     for market in markets_list:
