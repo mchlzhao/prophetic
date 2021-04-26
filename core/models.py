@@ -1,4 +1,6 @@
+from decimal import Decimal
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 
@@ -30,9 +32,9 @@ class Market(models.Model):
 
     min_price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     max_price = models.DecimalField(max_digits=8, decimal_places=2, default=100)
-    tick_size = models.DecimalField(max_digits=8, decimal_places=2, default=1)
-    multiplier = models.DecimalField(max_digits=8, decimal_places=2, default=1)
-    position_limit = models.IntegerField(default=5)
+    tick_size = models.DecimalField(max_digits=8, decimal_places=2, default=1, validators=[MinValueValidator(Decimal('0.01'))])
+    multiplier = models.DecimalField(max_digits=8, decimal_places=2, default=1, validators=[MinValueValidator(Decimal('0.01'))])
+    position_limit = models.PositiveIntegerField(default=5)
 
     settlement = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
 
