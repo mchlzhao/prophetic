@@ -25,7 +25,7 @@
 (function doPoll(){
     $.get("{% url 'market_orders' event.pk %}", function(data) {
         Object.keys(data).forEach(function(key) {
-            if (data[key]['has_settled'] == "true") {
+            if (data[key]['has_settled'] == true) {
                 document.getElementById("settlement_" + key).innerHTML = "Settled at " + data[key]['settlement'];
             }
 
