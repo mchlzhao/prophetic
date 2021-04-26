@@ -103,15 +103,14 @@ class MarketCreateView(LoginRequiredMixin, CreateView):
         form.instance.created_by = self.request.user
         event = Event.objects.get(pk=self.kwargs['event_id'])
         form.instance.event = event
-        return super().form_valid(form)
+
+        ret = super().form_valid(form)
+
+        MarketPositionManager.add_positions_for_market(self.object)
+        return ret
     
     def get_success_url(self):
         return reverse('markets', kwargs={'event_id': self.kwargs['event_id']})
-    
-    def post(self, request, *args, **kwargs):
-        ret = super().post(request, *args, **kwargs)
-        MarketPositionManager.add_positions_for_market(self.object)
-        return ret
 
 class MarketUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Market
